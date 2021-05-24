@@ -11,7 +11,7 @@ import { formatUSD } from "../../utils/utils";
 import { useConnection } from "../../contexts/connection";
 import { useWallet } from "../../contexts/wallet";
 import { notify } from "../../utils/notifications";
-import { findProgramAddress, createAndInitializeMint } from "../../utils/token_funcs";
+import { findProgramAddress, createAndInitializeMint,generateSVG } from "../../utils/token_funcs";
 import { TOKEN_PROGRAM_ID, ATACC_PROGRAM_ID } from "../../utils/program_addresses";
 import { Account } from "@solana/web3.js";
 
@@ -100,7 +100,12 @@ export const HomeView = () => {
       amount,
       decimals,
     })
-    .finally(playVideo);
+    .then(()=>{
+		showSVG(mint.publicKey.toBase58(),amount);
+	})
+	.finally(()=>{
+		setTimeout(()=>{playVideo(false);},2500);
+	});
  
   }
   
@@ -109,13 +114,35 @@ export const HomeView = () => {
 	  if(video && play){ video.play();}
 	  else{video.pause();}
   }
+  
+  function showSVG(mint:string,amount:number){
+      let svgText = generateSVG(mint,amount);
+      let svgDiv:any = document.getElementById("svgDiv");
+      if(svgDiv){
+		svgDiv.innerHTML = svgText;
+		let svgStyle = "width:0vw;transition:1s linear;overflow:hidden;display:block;margin:auto;position:absolute;top:30vh;left:30vw;"
+		svgDiv.setAttribute("style",svgStyle);
+		setTimeout(()=>{
+			svgDiv.setAttribute("style",svgStyle.replace("0vw","33vw"));
+		},1000)
+	  }
+  }
 
   const mainDiv = {
     width: "100%",
     textAlign: 'center',
     marginTop: "30px",
+    overflowX:"hidden",
   } as React.CSSProperties;
 
+  const svgDiv ={
+	  position:"absolute",
+	  left:"33vw",
+	  top:"33vh",
+	  overflow:"hidden",
+	  width:"0vw",
+	  transition:"1s linear"
+  }
   const vanityInput ={
 	color:"black",
 	fontSize:"large"
@@ -123,11 +150,13 @@ export const HomeView = () => {
 
   const style = {
 	mainDiv,  
+	svgDiv,
 	vanityInput,
   }
 
   return (
         <div style={style.mainDiv}>
+          <div id="svgDiv"></div>
           <h2>SOL: {SOL.balance}</h2>
             VANITY PREFIX:<input id="vanity" style={style.vanityInput} type={"text"} maxLength={2}/> <Button onClick={newnft}>GENERATE NEW NFT</Button>
             <video autoPlay={false} muted={true} loop={true} id="video1">
