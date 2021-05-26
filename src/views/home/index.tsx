@@ -101,7 +101,7 @@ export const HomeView = () => {
       decimals,
     })
     .then(()=>{
-		showSVG(mint.publicKey.toBase58(),amount);
+		showSVG(mint.publicKey.toBase58(),amount,decimals);
 	})
 	.finally(()=>{
 		setTimeout(()=>{playVideo(false);},2500);
@@ -115,16 +115,16 @@ export const HomeView = () => {
 	  else{video.pause();}
   }
   
-  function showSVG(mint:string,amount:number){
-      let svgText = generateSVG(mint,amount);
+  function showSVG(mint:string,amount:number,decimals:number){
+      let svgText = generateSVG(mint,amount,decimals);
       let svgDiv:any = document.getElementById("svgDiv");
       if(svgDiv){
 		svgDiv.innerHTML = svgText;
-		let svgStyle = "width:0vw;transition:1s linear;overflow:hidden;display:block;margin:auto;position:absolute;top:30vh;left:30vw;"
+		let svgStyle = "width:0vw;transition:0.1s ease;overflow:hidden;display:block;margin:auto;position:absolute;top:30vh;left:33vw;"
 		svgDiv.setAttribute("style",svgStyle);
 		setTimeout(()=>{
 			svgDiv.setAttribute("style",svgStyle.replace("0vw","33vw"));
-		},1000)
+		},500)
 	  }
   }
 

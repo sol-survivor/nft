@@ -547,37 +547,68 @@ export async function closeTokenAccount({
   });
 }
 
-export function generateSVG(mint="",amount=1){
-	let svgText = `<svg height=600 width=800>
-	      <defs>
-			<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-			  <stop offset="0%" style="stop-color:purple;stop-opacity:1" />
-			  <stop offset="100%" style="stop-color:blue;stop-opacity:1" />
-			</linearGradient>
-		  </defs>
-       <g>
-         <circle 
-          id="circle" 
-          cx="400" cy="300" 
-          r="130" />
-         <path id="arc" d="M395 170.1
-           A 130 130, 0, 1, 0, 400 170 Z"
-           stroke="black" fill="url(#grad1)"/>
-         <text id="circleText" width="500" fill="red" font-size="2.2vh">
-           <textPath id="circleTextPath" xlink:href="#arc"
-            startOffset="0%">
-              ${mint} - ${amount.toString()}
-             <animate attributeName="startOffset"
-               from="0%" to ="50%"
-               begin="0s" dur="70s"
-               repeatCount="10"/>
-               <animate attributeName="startOffset"
-               from="0%" to ="50%"
-               begin="70s" dur="70s"
-               repeatCount="10"/>
-            </textPath>
-        </g>
-      </svg>
-	`
+export function generateSVG(mint="",amount=1,decimals=0){
+	let mintFontSize ="1.08vw";
+	let svgText =`
+		<svg width="290" height="500" viewBox="0 0 290 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink='http://www.w3.org/1999/xlink'>
+		<defs><filter id="f1">
+		<feImage result="p0" xlink:href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjkwJyBoZWlnaHQ9JzUwMCcgdmlld0JveD0nMCAwIDI5MCA1MDAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PHJlY3Qgd2lkdGg9JzI5MHB4JyBoZWlnaHQ9JzUwMHB4JyBmaWxsPSdwdXJwbGUnLz48L3N2Zz4="/><feImage result="p1" xlink:href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjkwJyBoZWlnaHQ9JzUwMCcgdmlld0JveD0nMCAwIDI5MCA1MDAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PGNpcmNsZSBjeD0nMTkyJyBjeT0nMzI1JyByPScxMjBweCcgZmlsbD0nZGFya3JlZCcvPjwvc3ZnPg=="/><feImage result="p2" xlink:href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjkwJyBoZWlnaHQ9JzUwMCcgdmlld0JveD0nMCAwIDI5MCA1MDAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PGNpcmNsZSBjeD0nMjQzJyBjeT0nMzYyJyByPScxMjBweCcgZmlsbD0ncHVycGxlJy8+PC9zdmc+" /><feImage result="p3" xlink:href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMjkwJyBoZWlnaHQ9JzUwMCcgdmlld0JveD0nMCAwIDI5MCA1MDAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PGNpcmNsZSBjeD0nMzcnIGN5PScxMzEnIHI9JzEwMHB4JyBmaWxsPSdyZWQnLz48L3N2Zz4=" /><feBlend mode="overlay" in="p0" in2="p1" /><feBlend mode="exclusion" in2="p2" /><feBlend mode="overlay" in2="p3" result="blendOut" /><feGaussianBlur in="blendOut" stdDeviation="42" /></filter> <clipPath id="corners"><rect width="290" height="500" rx="42" ry="42" /></clipPath><path id="text-path-a" d="M40 12 H250 A28 28 0 0 1 278 40 V460 A28 28 0 0 1 250 488 H40 A28 28 0 0 1 12 460 V40 A28 28 0 0 1 40 12 z" />
+		<path id="minimap" d="M234 444C234 457.949 242.21 463 253 463" />
+		<filter id="top-region-blur"><feGaussianBlur in="SourceGraphic" stdDeviation="24" /></filter>
+		<linearGradient id="grad-up" x1="1" x2="0" y1="1" y2="0">
+		<stop offset="0.0" stop-color="white" stop-opacity="1" /><stop offset=".9" stop-color="white" stop-opacity="0" /></linearGradient>
+		<linearGradient id="grad-down" x1="0" x2="1" y1="0" y2="1">
+		<stop offset="0.0" stop-color="white" stop-opacity="1" />
+		<stop offset="0.9" stop-color="white" stop-opacity="0" /></linearGradient>
+		<mask id="fade-up" maskContentUnits="objectBoundingBox">
+		<rect width="1" height="1" fill="url(#grad-up)" /></mask>
+		<mask id="fade-down" maskContentUnits="objectBoundingBox">
+		<rect width="1" height="1" fill="url(#grad-down)" /></mask>
+		<mask id="none" maskContentUnits="objectBoundingBox">
+		<rect width="1" height="1" fill="white" /></mask>
+		<linearGradient id="grad-symbol">
+		<stop offset="0.7" stop-color="white" stop-opacity="1" />
+		<stop offset=".95" stop-color="white" stop-opacity="0" /></linearGradient>
+		<mask id="fade-symbol" maskContentUnits="userSpaceOnUse">
+		<rect width="290px" height="200px" fill="url(#grad-symbol)" /></mask></defs>
+		<g clip-path="url(#corners)">
+		<rect fill="purple" x="0px" y="0px" width="290px" height="500px" />
+		<rect style="filter: url(#f1)" x="0px" y="0px" width="290px" height="500px" /> 
+		<g style="filter:url(#top-region-blur); transform:scale(1.5); transform-origin:center top;">
+		<rect fill="none" x="0px" y="0px" width="290px" height="500px" />
+		<ellipse cx="50%" cy="0px" rx="180px" ry="120px" fill="#000" opacity="0.85" />
+		</g>
+		<rect x="0" y="0" width="290" height="500" rx="42" ry="42" fill="transparent" stroke="rgba(255,255,255,0.2)" />
+		</g>
+		<text text-rendering="optimizeSpeed">
+		<textPath startOffset="-100%" fill="white" font-family="'Courier New', monospace" font-size="${mintFontSize}" xlink:href="#text-path-a">
+		${mint}
+		 ◎ 
+		 <animate additive="sum" attributeName="startOffset" from="0%" to="100%" begin="0s" dur="30s" repeatCount="indefinite" />
+		</textPath> <textPath startOffset="0%" fill="white" font-family="'Courier New', monospace" font-size="${mintFontSize}" xlink:href="#text-path-a">
+		${mint}
+		 ◎ 
+		 <animate additive="sum" attributeName="startOffset" from="0%" to="100%" begin="0s" dur="30s" repeatCount="indefinite" /> </textPath>
+		<textPath startOffset="50%" fill="white" font-family="'Courier New', monospace" font-size="${mintFontSize}" xlink:href="#text-path-a">
+		${mint}
+		 ◎ 
+		 <animate additive="sum" attributeName="startOffset" from="0%" to="100%" begin="0s" dur="30s"
+		 repeatCount="indefinite" /></textPath><textPath startOffset="-50%" fill="white" font-family="'Courier New', monospace" font-size="${mintFontSize}" xlink:href="#text-path-a">
+		${mint}
+		 ◎ 
+		 <animate additive="sum" attributeName="startOffset" from="0%" to="100%" begin="0s" dur="30s" repeatCount="indefinite" />
+		 </textPath>
+		 </text>
+		 <g style="transform:translate(29px, 414px)">
+			 <rect width="105px" height="26px" rx="8px" ry="8px" fill="rgba(0,0,0,0.6)" />
+			 <text x="12px" y="17px" font-family="'Courier New', monospace" font-size="12px" fill="white">
+			 <tspan fill="rgba(255,255,255,0.6)">Amount: </tspan> ${amount} </text></g> 
+		 <g style="transform:translate(29px, 444px)">
+			 <rect width="112px" height="26px" rx="8px" ry="8px" fill="rgba(0,0,0,0.6)" />
+			 <text x="12px" y="17px" font-family="'Courier New', monospace" font-size="12px" fill="white">
+			 <tspan fill="rgba(255,255,255,0.6)">Decimals: </tspan>${decimals}</text>
+		 </g>
+		</svg>
+		`
 	return svgText;
 }
